@@ -253,9 +253,16 @@ template
 double caffe_nextafter(const double b);
 
 template <typename Dtype>
-void caffe_rng_uniform(const int n, const Dtype a, const Dtype b, Dtype* r) {
+//Resolution as per https://github.com/weiliu89/caffe/issues/669#issuecomment-339542120
+void caffe_rng_uniform(const int n,  Dtype a,  Dtype b, Dtype* r) {
   CHECK_GE(n, 0);
   CHECK(r);
+  //enabling shuffling
+    if(a > b) {
+    Dtype c = a;
+    a = b;
+    b = c;
+  }
   CHECK_LE(a, b);
   boost::uniform_real<Dtype> random_distribution(a, caffe_nextafter<Dtype>(b));
   boost::variate_generator<caffe::rng_t*, boost::uniform_real<Dtype> >
